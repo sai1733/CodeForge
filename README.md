@@ -2,20 +2,20 @@
 
 # ⚡ CodeForge
 
-### **Collaborative Engineering & Internship Management Platform with In-Browser Cloud IDE**
+### **Collaborative Engineering & Internship Management Platform with Embedded Cloud IDE & Git Automation**
 
 [![React](https://img.shields.io/badge/Frontend-React_18_%7C_Vite-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactjs.org/)
 [![Node.js](https://img.shields.io/badge/Backend-Node.js_%7C_Express-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![MongoDB](https://img.shields.io/badge/Database-MongoDB_%7C_Mongoose-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 [![Socket.io](https://img.shields.io/badge/Realtime-Socket.io-010101?style=for-the-badge&logo=socketdotio&logoColor=white)](https://socket.io/)
 [![GitHub API](https://img.shields.io/badge/Integration-GitHub_REST_API-181717?style=for-the-badge&logo=github&logoColor=white)](https://docs.github.com/en/rest)
-[![Monaco Editor](https://img.shields.io/badge/Editor-Monaco_IDE-007ACC?style=for-the-badge&logo=visualstudiocode&logoColor=white)](https://microsoft.github.io/monaco-editor/)
+[![StackBlitz](https://img.shields.io/badge/Cloud_IDE-StackBlitz_WebContainer_SDK-1389FD?style=for-the-badge&logo=stackblitz&logoColor=white)](https://developer.stackblitz.com/)
 
 <br />
 
-**CodeForge** is an enterprise-grade collaborative development platform tailored for software engineering teams, bootcamps, and internship programs. It bridges the gap between project oversight and hands-on coding by combining **Role-Based Access Control (RBAC)**, **live GitHub repository telemetry**, and a **zero-setup, browser-based Cloud IDE with Monaco editor & WebContainer execution**.
+**CodeForge** is an enterprise-grade collaborative development platform tailored for software engineering teams, bootcamps, and internship programs. It bridges the gap between project oversight and hands-on coding by combining **Role-Based Access Control (RBAC)**, **automated GitHub Git-Flow pipelines (branches, trees, and PRs)**, and a **zero-setup, browser-based Cloud IDE powered by StackBlitz WebContainer SDK**.
 
-[Explore Features](#-key-features) • [System Architecture](#-system-architecture) • [Role Breakdown](#-role-based-workflows) • [Installation & Setup](#-getting-started) • [API & Sockets](#-technical-highlights)
+[Explore Features](#-key-features) • [System Architecture](#-system-architecture) • [Role Breakdown](#-role-based-workflows) • [Installation & Setup](#-getting-started) • [Default Test Accounts](#-default-test-accounts)
 
 ---
 
@@ -26,9 +26,9 @@
 Traditional internship workflows suffer from tedious local environment setup, fragmented code review cycles, and detached progress reporting. 
 
 **CodeForge solves this with a unified single-pane interface:**
-1. **Zero-Friction Onboarding**: Interns write, debug, and execute code directly in their browser using an in-house **Cloud IDE** powered by Microsoft Monaco Editor & WebContainers.
-2. **Deep GitHub Telemetry**: Real-time inspection of Git commits, branch diffs, and pull requests directly from supervised project repos via GitHub REST API integrations.
-3. **Structured Governance**: Strict hierarchical workflows connecting **Super Admins**, **Engineering Managers**, and **Interns** with real-time notifications, task boards, and daily work logs.
+1. **Zero-Friction In-Browser Development**: Interns write, run, and test code directly in their browser using an embedded **StackBlitz WebContainer VM** (`@stackblitz/sdk`). Code drafts synchronize bi-directionally with MongoDB Atlas and GitHub.
+2. **Automated Git-Flow & GitHub Telemetry**: Automated creation of per-intern working branches (`codeforge/intern-<name>`), programmatic Git Tree commits, and one-click GitHub Pull Requests directly from the portal.
+3. **Structured Governance**: Strict hierarchical workflows connecting **Super Admins**, **Engineering Managers**, and **Interns** with real-time Socket.io notifications, task boards, and daily work logs.
 
 ---
 
@@ -36,32 +36,32 @@ Traditional internship workflows suffer from tedious local environment setup, fr
 
 ```mermaid
 flowchart TD
-    subgraph Client["🖥️ Frontend (React 18 + Vite + Tailwind/Modern Dark UI)"]
-        Landing["Public Landing & Auth Guard"]
-        AdminView["Admin Console (Metrics, Users, Projects)"]
-        ManagerView["Manager Dashboard (Cohort, Tasks, Daily Reports)"]
-        InternView["Intern Workspace (Tasks, GitHub Activity)"]
-        CloudIDE["In-Browser Cloud IDE (Monaco + Terminal + File Explorer)"]
+    subgraph Client["🖥️ Frontend (React 18 + Vite + Modern Glass Dark UI)"]
+        Landing["Public Landing & Route Guards"]
+        AdminView["Admin Console (User Provisioning, Project Allocations)"]
+        ManagerView["Manager Dashboard (Cohort Overview, Task Assigner, Report Reviews)"]
+        InternView["Intern Workspace (Tasks, Git Activity, Reports)"]
+        CloudIDE["In-Browser Cloud IDE (StackBlitz WebContainer SDK & Embedded VM)"]
     end
 
     subgraph Server["⚙️ Backend (Node.js + Express REST API)"]
         AuthMid["JWT & RBAC Middleware"]
-        Controllers["Controllers (Auth, Projects, Tasks, Reports, Analytics)"]
-        SocketServer["Socket.io Gateway (Live Task & Alert Events)"]
-        GitHubService["GitHub API Service (Commits, Branches, PRs, Webhooks)"]
-        CryptoService["AES-256 GCM Token Encryption"]
+        Controllers["Controllers (Auth, Projects, Tasks, Reports, GitHub, Files)"]
+        SocketServer["Socket.io Gateway (Live User Alerts & Task Updates)"]
+        GitHubEngine["GitHub REST Engine (Git Trees, Commits, Branches & Pull Requests)"]
+        CryptoService["AES-256-GCM Token Encryption"]
     end
 
     subgraph Data["💾 Storage & External Services"]
-        MongoDB[(MongoDB Atlas / Local DB)]
-        GitHubAPI["GitHub API Cloud"]
+        MongoDB[(MongoDB Database)]
+        GitHubAPI["GitHub API Cloud (REST v3)"]
         EmailService["Nodemailer SMTP Gateway"]
     end
 
     Client <-->|REST API + Axios| Server
     Client <-->|WebSockets (Live Push)| SocketServer
     Server <-->|Mongoose ODM| MongoDB
-    Server <-->|Encrypted OAuth / PAT| GitHubAPI
+    Server <-->|Encrypted OAuth / PAT (Git Trees & PRs)| GitHubAPI
     Server -->|Transactional Emails| EmailService
 ```
 
@@ -69,43 +69,45 @@ flowchart TD
 
 ## ✨ Key Features
 
-### 💻 1. In-Browser Cloud IDE
-* **Monaco Editor Integration**: VS Code-grade code editing with syntax highlighting, IntelliSense, auto-indentation, and multi-file tabs.
-* **Full File Tree Explorer**: Create, rename, edit, and organize files dynamically in an isolated virtual workspace.
-* **Terminal & Runtime Engine**: Integrated browser-based runtime shell using `@webcontainer/api` and `xterm.js` for instant testing without local runtime dependencies.
-* **Theme Switching**: Seamless toggle between Dark, Light, and High-Contrast development themes.
+### 💻 1. Embedded StackBlitz Cloud IDE
+* **WebContainer Virtual Machine**: Executes Node.js environments directly in the browser using the official `@stackblitz/sdk`.
+* **Zero Local Setup**: Interns can write code, run dev servers, and execute commands in terminal without installing Node or Git locally.
+* **Draft Save & MongoDB Persistence**: Virtual file system snapshots are serialized (`vm.getFsSnapshot()`) and backed up to MongoDB for seamless state restoration across sessions.
+* **Direct Git Commit & Push**: Changes in the virtual sandbox can be bundled into a GitHub tree commit and pushed straight to the intern's branch with one click.
+* **One-Click Pull Requests**: Interns can open official GitHub Pull Requests from their workspace directly to the upstream `main` branch.
 
-### 🐙 2. Live GitHub Repository Telemetry
-* **Automated Sync**: Connect any project repository URL to fetch and monitor repository health.
-* **Granular Commit & PR Tracking**: Managers and interns can view commit histories, branches, and pull requests directly from the portal.
-* **AES-256 Token Encryption**: GitHub Personal Access Tokens and OAuth secrets are safely encrypted before being stored at rest.
+### 🐙 2. Automated Git-Flow & GitHub REST Integration
+* **Auto-Branching**: Automatically spins up dedicated intern branches (`codeforge/intern-<username>`) branching off `main`.
+* **Low-Level Git Tree Manipulation**: Leverages GitHub's Git Data API (`/git/trees`, `/git/commits`, `/git/refs`) to push file modifications directly via API without needing a local Git CLI.
+* **Telemetry & History**: Managers and interns can monitor real-time commit logs, branches, and PR status.
+* **AES-256-GCM Encryption**: Tokens and personal access credentials are encrypted at rest with AES-256-GCM.
 
 ### 👥 3. Multi-Tier Role-Based Access Control (RBAC)
 
 ```mermaid
 flowchart LR
-    A["👑 Super Admin"] -->|Manages| B["👔 Engineering Manager"]
-    A -->|Provisions Projects| C["📂 Shared Projects"]
+    A["👑 Super Admin"] -->|Manages Users & Projects| B["👔 Engineering Manager"]
+    A -->|Assigns Workspaces| C["📂 Shared Projects"]
     B -->|Assigns Tasks & Reviews| D["🎓 Intern"]
-    D -->|Submits Code & Reports| B
+    D -->|Submits Work & PRs| B
 ```
 
 | Feature / Permission | 👑 Super Admin | 👔 Manager | 🎓 Intern |
 |---|:---:|:---:|:---:|
 | System Metrics & Analytics | ✅ Full | 📊 Cohort Only | ❌ |
 | User Provisioning & Invites | ✅ | ❌ | ❌ |
-| Create & Assign Workspaces | ✅ | ❌ | ❌ |
+| Create & Assign Projects | ✅ | ❌ | ❌ |
 | Assign Tasks & Set Milestones | ✅ | ✅ | ❌ |
-| Update Task Status & Submit Work | ❌ | ✅ | ✅ |
+| Update Task Status & Lifecycle | ❌ | ✅ | ✅ |
 | Submit Daily Work Reports | ❌ | ❌ | ✅ |
-| Grade & Review Intern Reports | ❌ | ✅ | ❌ |
-| Launch In-Browser Cloud IDE | ✅ | ✅ | ✅ |
+| Review & Grade Intern Reports | ❌ | ✅ | ❌ |
+| In-Browser StackBlitz Cloud IDE | ✅ | ✅ | ✅ |
 | Inspect Supervised Git Activity | ✅ | ✅ | 🔍 Assigned Project |
 
-### 📊 4. Productivity & Milestone Tracking
-* **Task Board**: Real-time lifecycle management (`Pending` ➔ `In Progress` ➔ `Completed`) with priorities and deadlines.
-* **Daily Work Reports**: Interns submit end-of-day summaries with blockers and accomplishments; managers review, provide feedback, and sign off.
-* **Analytics Engine**: Visual metrics rendered using `Chart.js` for system throughput, task completion velocities, and active intern engagement.
+### 📊 4. Task Management & Work Reporting
+* **Task Board**: Real-time lifecycle tracking (`Pending` ➔ `In Progress` ➔ `Completed`) with priorities and deadlines.
+* **Daily Work Reports**: Interns log daily achievements, difficulties, and next steps; managers review and sign off.
+* **Visual Analytics**: Interactive performance graphs built with `Chart.js` for task throughput and cohort progress.
 
 ---
 
@@ -114,12 +116,13 @@ flowchart LR
 | Layer | Technologies |
 |---|---|
 | **Frontend UI** | React 18, Vite, React Router v6, Lucide Icons, Context API |
-| **Code Editor & Shell** | Microsoft Monaco Editor (`@monaco-editor/react`), Xterm.js, WebContainers |
-| **Styling & Charts** | Custom Modern CSS3 Design System, Chart.js, React-ChartJS-2 |
+| **Cloud IDE Engine** | StackBlitz WebContainer SDK (`@stackblitz/sdk`) |
+| **Styling & Charts** | Custom CSS3 Dark Glassmorphism, Chart.js, React-ChartJS-2 |
 | **Backend API** | Node.js, Express.js (RESTful API architecture, MVC pattern) |
-| **Database & ODM** | MongoDB, Mongoose v8 (Normalized relationships, indexing) |
-| **Realtime Engine** | Socket.io (Bi-directional real-time task notifications) |
-| **Security & Auth** | JSON Web Tokens (JWT), Bcrypt.js, AES-256-GCM Crypto, Helmet, CORS |
+| **Database & ODM** | MongoDB, Mongoose v8 (Normalized schemas, indexing) |
+| **Realtime Engine** | Socket.io (Bi-directional real-time room notifications) |
+| **Git Integration** | GitHub REST API v3 (Git Trees, Commits, References, Pull Requests) |
+| **Security & Auth** | JSON Web Tokens (JWT), Bcrypt.js, AES-256-GCM Encryption, CORS |
 | **Mailer** | Nodemailer (Password resets, onboarding invitations) |
 
 ---
@@ -129,7 +132,7 @@ flowchart LR
 ### Prerequisites
 * **Node.js**: v18.0.0 or higher
 * **npm**: v9.0.0 or higher
-* **MongoDB**: Local MongoDB instance running on `mongodb://localhost:27017` or MongoDB Atlas URI
+* **MongoDB**: Local MongoDB instance (`mongodb://localhost:27017`) or MongoDB Atlas URI
 
 ---
 
@@ -149,7 +152,7 @@ Create a `.env` file in the `backend` directory (or duplicate `.env.example`):
 ```env
 PORT=5000
 MONGODB_URI=mongodb://localhost:27017/codeforge
-JWT_SECRET=your_super_secret_jwt_key
+JWT_SECRET=super_secret_jwt_key_change_me_in_production
 NODE_ENV=development
 
 # Optional Mailer Config (for password resets & invites)
@@ -161,19 +164,19 @@ EMAIL_PASSWORD=your_app_password
 GITHUB_CLIENT_ID=your_github_client_id
 GITHUB_CLIENT_SECRET=your_github_client_secret
 GITHUB_CALLBACK_URL=http://localhost:5000/api/github/callback
-GITHUB_TOKEN_ENCRYPTION_KEY=32_bytes_random_hex_encryption_key
+GITHUB_TOKEN_ENCRYPTION_KEY=your_token_encryption_key_at_least_32_bytes
 ```
 
-Seed initial administrative users and test workspaces:
+Seed initial administrative users and test accounts:
 ```bash
-npm run seed
+node clearAndSeed.js
 ```
 
 Start the backend development server:
 ```bash
 npm run dev
 ```
-> Server will boot up on **`http://localhost:5000`**.
+> Server boots up on **`http://localhost:5000`**.
 
 ---
 
@@ -199,14 +202,16 @@ npm run dev
 
 ## 🧪 Default Test Accounts
 
-When you run `npm run seed` in the backend, the following pre-configured user credentials become immediately available:
+When you run `node clearAndSeed.js` (or `npm run seed`), the database is populated with the following pre-configured credentials:
 
-| Role | Email | Password | Scope |
+| Role | Email | Default Password | Scope |
 |---|---|---|---|
-| **Super Admin** | `admin@gmail.com` | `password123` | Global Administration |
-| **Manager** | `manager1@gmail.com` | `password123` | Project & Intern Supervision |
-| **Intern 1** | `intern1@gmail.com` | `password123` | Assigned Tasks & Cloud IDE |
-| **Intern 2** | `intern2@gmail.com` | `password123` | Assigned Tasks & Cloud IDE |
+| **Super Admin** | `admin@gmail.com` | `Test@123` | Global Administration |
+| **Admin 1** | `admin1@gmail.com` | `Test@123` | Secondary Admin |
+| **Manager 1** | `manager1@gmail.com` | `Test@123` | Project & Intern Supervision |
+| **Manager 2** | `manager2@gmail.com` | `Test@123` | Project & Intern Supervision |
+| **Intern 1** | `intern1@gmail.com` | `Test@123` | Assigned Tasks & Cloud IDE |
+| **Intern 2** | `intern2@gmail.com` | `Test@123` | Assigned Tasks & Cloud IDE |
 
 ---
 
@@ -221,22 +226,23 @@ CodeForge/
 │   │   ├── middleware/      # JWT verification, Role authorization, Validation
 │   │   ├── models/          # Mongoose Schemas (User, Project, Task, Report, etc.)
 │   │   ├── routes/          # Express REST endpoint declarations
-│   │   ├── utils/           # Encryption helpers, Token generators, Seed script
+│   │   ├── utils/           # Encryption helpers, Token generators, Seed logic
 │   │   ├── app.js           # Express app setup and middleware configuration
 │   │   └── server.js        # HTTP & Socket.io server entrypoint
+│   ├── clearAndSeed.js      # Complete clean-and-seed database utility
 │   ├── .env.example
 │   └── package.json
 │
 ├── frontend/
 │   ├── src/
 │   │   ├── api/             # Axios client instances and endpoint contracts
-│   │   ├── components/      # Common UI, IDE components, Task boards, Git panels
+│   │   ├── components/      # Common UI, Task boards, Git panels
 │   │   ├── context/         # AuthContext, ProjectContext, TaskContext, Sockets
 │   │   ├── hooks/           # Custom React hooks
 │   │   ├── pages/
 │   │   │   ├── admin/       # Super Admin dashboard, User & Project managers
 │   │   │   ├── auth/        # Login, Register, Invite acceptance, Password reset
-│   │   │   ├── intern/      # Intern Dashboard, Cloud IDE, Task boards, Reports
+│   │   │   ├── intern/      # Intern Dashboard, StackBlitz Cloud IDE, Task boards, Reports
 │   │   │   ├── manager/     # Manager Dashboard, Task assigner, Report reviews
 │   │   │   └── public/      # Landing page, Product presentation
 │   │   ├── routes/          # ProtectedRoute guards and application router
@@ -246,7 +252,7 @@ CodeForge/
 │   ├── .env.example
 │   └── package.json
 │
-├── FULL_TESTING_GUIDE.md    # Complete end-to-end testing and QA test book
+├── FULL_TESTING_GUIDE.md    # Complete end-to-end QA manual testing book
 ├── .gitignore               # Strict exclusion of secrets and dependencies
 └── README.md                # Project documentation and visual portfolio guide
 ```
@@ -257,7 +263,7 @@ CodeForge/
 
 - **Stateless Authentication**: High-entropy JWT tokens with fine-grained expiration times.
 - **Role-Based Guards (RBAC)**: Backend route gates and frontend React route wrappers preventing privilege escalation.
-- **Crypto Protection**: Secret tokens and third-party credentials encrypted using **AES-256-GCM** before persistence in MongoDB.
+- **Crypto Protection**: GitHub tokens and secrets are encrypted using **AES-256-GCM** before persistence in MongoDB.
 - **Safe Sanitization**: Protected against SQL/NoSQL injection queries and strict CORS policies.
 
 ---
