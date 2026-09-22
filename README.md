@@ -36,32 +36,33 @@ Traditional internship workflows suffer from tedious local environment setup, fr
 
 ```mermaid
 flowchart TD
-    subgraph Client["🖥️ Frontend (React 18 + Vite + Modern Glass Dark UI)"]
+    subgraph Client["Frontend Client (React 18 & Vite)"]
         Landing["Public Landing & Route Guards"]
-        AdminView["Admin Console (User Provisioning, Project Allocations)"]
-        ManagerView["Manager Dashboard (Cohort Overview, Task Assigner, Report Reviews)"]
-        InternView["Intern Workspace (Tasks, Git Activity, Reports)"]
-        CloudIDE["In-Browser Cloud IDE (StackBlitz WebContainer SDK & Embedded VM)"]
+        AdminView["Admin Console"]
+        ManagerView["Manager Dashboard"]
+        InternView["Intern Workspace"]
+        CloudIDE["In-Browser StackBlitz Cloud IDE"]
     end
 
-    subgraph Server["⚙️ Backend (Node.js + Express REST API)"]
+    subgraph Server["Backend Server (Node.js & Express)"]
         AuthMid["JWT & RBAC Middleware"]
-        Controllers["Controllers (Auth, Projects, Tasks, Reports, GitHub, Files)"]
-        SocketServer["Socket.io Gateway (Live User Alerts & Task Updates)"]
-        GitHubEngine["GitHub REST Engine (Git Trees, Commits, Branches & Pull Requests)"]
-        CryptoService["AES-256-GCM Token Encryption"]
+        Controllers["Feature Controllers"]
+        SocketServer["Socket.io Gateway"]
+        GitHubEngine["GitHub REST Engine"]
+        CryptoService["AES-256-GCM Encryption"]
     end
 
-    subgraph Data["💾 Storage & External Services"]
-        MongoDB[(MongoDB Database)]
-        GitHubAPI["GitHub API Cloud (REST v3)"]
+    subgraph Data["Storage & External APIs"]
+        MongoDB[("MongoDB Database")]
+        GitHubAPI["GitHub Cloud REST API"]
         EmailService["Nodemailer SMTP Gateway"]
     end
 
-    Client <-->|REST API + Axios| Server
-    Client <-->|WebSockets (Live Push)| SocketServer
-    Server <-->|Mongoose ODM| MongoDB
-    Server <-->|Encrypted OAuth / PAT (Git Trees & PRs)| GitHubAPI
+    Client -->|REST Requests| Server
+    Server -->|JSON Responses| Client
+    Client ---|Socket.io Realtime Events| SocketServer
+    Server -->|Mongoose Queries| MongoDB
+    Server -->|Encrypted Git Trees and PRs| GitHubAPI
     Server -->|Transactional Emails| EmailService
 ```
 
